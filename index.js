@@ -32,6 +32,7 @@ const leftPanelCurrencies = [
     }
 ];
 
+
 const rightPanelCurrencies = [
     {
         "currency": "RUB",
@@ -484,4 +485,5 @@ leftInput.addEventListener('input', (event) => {
 //         }
 //     }
 // });
-// }
+//
+
