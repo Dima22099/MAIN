@@ -235,6 +235,8 @@ revers.addEventListener('click', (event) => {
 // const calc__period = document.querySelector('.calc__period');
 
 
+
+
 // let stateToReverseLeft = 'USD';
 // let stateToReverseRight = 'RUB';
 // let selectedCurrencyCentr = '';
