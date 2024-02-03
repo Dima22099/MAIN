@@ -236,7 +236,6 @@ revers.addEventListener('click', (event) => {
 
 
 
-
 // let stateToReverseLeft = 'USD';
 // let stateToReverseRight = 'RUB';
 // let selectedCurrencyCentr = '';
