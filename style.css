@@ -157,4 +157,7 @@ h2, h3, h4 {
     margin: 8px;
 }
 
+.revers {
+    cursor: pointer;
+}
 

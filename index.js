@@ -7,6 +7,7 @@ const getUrl = (currency) => `https://v6.exchangerate-api.com/v6/${API_KEY}/late
 const mainBlock = document.querySelector('.main');
 const leftInput = document.querySelector('.left-input');
 const rightInput = document.querySelector('.right-input');
+const revers = document.querySelector('.revers');
 
 let leftPanelBlock;
 let rightPanelBlock;
@@ -58,10 +59,8 @@ let isRightModalOpen = false;
 
 
 // #3 Вспомогательные функции
-const getLeftSelectedCurrency = () => {
-    const { currency } = leftPanelCurrencies.filter(({ checked }) => checked)[0];
-    return currency;
-};
+const getLeftSelectedCurrency = () => leftPanelCurrencies.filter(({ checked }) => checked)[0].currency; 
+
 const getRightSelectedCurrency = () => rightPanelCurrencies.filter(({ checked }) => checked)[0].currency;
 
 const rerenderLeftPanel = () => {
@@ -73,7 +72,7 @@ const rerenderLeftPanel = () => {
      
             <div class="currency__item material-symbols-outlined left__arrow__down">arrow_downward</div>
             `
-
+            
     if (left) {
         left.innerHTML = content
     } else {
@@ -138,7 +137,7 @@ const getData = async () => {
     const rightSelectedCurrency = getRightSelectedCurrency();
 
     const URL = getUrl(leftSelectedCurrency);
-    console.log('### URL', URL);
+    // console.log('### URL', URL);
 
     const response = await fetch(URL);
     const { conversion_rates } = await response.json();
@@ -182,6 +181,39 @@ leftInput.addEventListener('input', (event) => {
     rightInput.value = newValue * CONVERSION_RATES[rightCurrency];
 });
 
+                    // REVERS
+revers.addEventListener('click', (event) => {
+    // Меняем местами значения input
+    const tempInputValue = leftInput.value;
+    leftInput.value = rightInput.value;
+    rightInput.value = tempInputValue;
+
+    // Меняем местами панели валют
+    let temp1;
+    let temp2;
+    rightPanelCurrencies.forEach((item, index) => {
+        if (item.checked) {
+            rightPanelCurrencies[index].checked = false;
+            temp1 = rightPanelCurrencies[index].currency;
+        };
+    });
+    
+
+    leftPanelCurrencies.forEach((item, index) => {
+        if (item.checked) {
+            leftPanelCurrencies[index].checked = false;
+            temp2 = leftPanelCurrencies[index].currency;
+        };
+    });
+
+    rightPanelCurrencies.forEach((item) => item.currency === temp2 ? item.checked = true : "");
+    leftPanelCurrencies.forEach((item) => item.currency === temp1 ? item.checked = true : "");
+
+    // Повторно отрендерим обе панели
+    rerenderLeftPanel();
+    rerenderRightPanel();
+});
+
 // TODO LIST
 // TODO: обработчик события на стрелку reverse (по середине)
 // TODO: модальное окно и логика выбора новый валюты (встаёт в конец панели + эта валюта становится выбрана)
@@ -222,7 +254,7 @@ leftInput.addEventListener('input', (event) => {
 //     if (isLeftModalOpen || isRightModalOpen) {
 //         const block = document.createElement("div");
 //         block.className = "modalWindow";
-//         const calcCurrencyColumnLeft = `<div class="calc__currency__column__left">
+//         const calcCurrencyColumnLeft = `div class="calc__currency__column__left"
 //             <div class="modalLeft RUB">Российский рубль<div class="modalLeft" style="font-weight: bold;">RUB</div></div>
 //             <div class="modalLeft USD">Доллар США<div class="modalLeft" style="font-weight: bold;">USD</div></div>
 //             <div class="modalLeft EUR">Евро<div class="modalLeft" style="font-weight: bold;">EUR</div></div>
