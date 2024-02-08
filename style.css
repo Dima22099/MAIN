@@ -79,20 +79,8 @@ h2, h3, h4 {
     /* border: 2px rgb(54, 193, 75) solid; */
 }
 
-.modalWindow, .selectActive {
-    width: 780px;
-    padding: 10px;
-    position: absolute;
-    left: 50px;
-    top: 125px;
-    /* z-index: 1; */
-    background: #fff;
-    box-shadow: 0 8px 40px 0 #c0c0c00f;
-    /* display: none; */
-    border-radius: 4px;
-    /* border: 2px red solid; */
-    display: flex;
-}
+
+
 
 .right-input, .left-input {
     width: 300px;
@@ -130,34 +118,73 @@ h2, h3, h4 {
 .icon__sync {
     color: grey;
     font-weight: 100;
+/* width: 60px; */
+    /* zoom: 2; */
+    transition: transform 0.3s ease;
 }
 
-.modalLeft {
+.arror__revers{
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0, 
+    'opsz' 24
+    
+}
+
+.icon__sync:hover {
+    transform: scale(3);
+    
+}
+
+.modalWindow {
+    position: absolute;
+    cursor: pointer;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    padding: 10px;
     border-radius: 5px;
-    padding: 5px;
-    padding-bottom: 3px;
-    padding-top: 3px;
+    height: 300px;
+    width: 830px;
+    
+    left: 50px;
+    top: 125px;
+    font-size: 18px;
+    color: black;
+    box-shadow: 0 8px 40px 0 #c0c0c00f;
     line-height: 1;
     -webkit-transition: all 0.5s ease;
-    transition: all 0.5s ease;
-    /* background-color: #aeaeca; */
-}
-
-.modalLeft:hover {
-    background-color: rgb(54, 114, 173);
-}
-
-.calc__currency__column__left, .calc__currency__column__centr,
-.calc__currency__column__right {
-    font-size: 12px;
-    max-width:  240px;
-    flex: auto;
-    margin: 8px;
+    transition: all 0.3s ease;
+    
+    background: #fff;
 }
 
 .revers {
     cursor: pointer;
+    
 }
 
+
+.leftOpenModal, .centrOpenModal,
+.rightOpenModal {
+    padding: 2px;
+    font-family: fangsong, sans-serif;
+    max-width:  240px;
+    flex: auto;
+    cursor: pointer;
+}
+
+.leftOpenModal:hover, .centrOpenModal:hover,
+.rightOpenModal:hover {
+    line-height: 1;
+    -webkit-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+
+    background-color: rgb(54, 114, 173);
+}
+
+.bold {
+    font-weight: bold;
+}

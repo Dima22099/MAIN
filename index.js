@@ -9,10 +9,12 @@ const leftInput = document.querySelector('.left-input');
 const rightInput = document.querySelector('.right-input');
 const revers = document.querySelector('.revers');
 
+
 let leftPanelBlock;
 let rightPanelBlock;
 
 
+    
 // #2 Состояние
 const leftPanelCurrencies = [
     {
@@ -30,7 +32,7 @@ const leftPanelCurrencies = [
     {
         "currency": "RUB",
         "checked": false
-    }
+    },
 ];
 
 
@@ -50,7 +52,7 @@ const rightPanelCurrencies = [
     {
         "currency": "GBP",
         "checked": false
-    }
+    },
 ];
 
 let CONVERSION_RATES;
@@ -103,7 +105,7 @@ const rerenderRightPanel = () => {
             `<div data-currency="${currency}" class="currency__item ${checked ? "currency-checked" : ""}">${currency}</div>`
         ).join('')}
     
-        <div class="currency__item material-symbols-outlined left__arrow__down">arrow_downward</div>
+        <div class="currency__item material-symbols-outlined right__arrow__down">arrow_downward</div>
         `;
 
     if (right) {
@@ -130,96 +132,209 @@ const renderRightBox = () => {
 renderRightBox();
 renderLeftBox();
 
+// Получаем СТРЕЛКИ  // left & right arrow downs 
+const leftArrowDown = document.querySelector('.left__arrow__down');
+const rightArrowDown = document.querySelector('.right__arrow__down');
+const currencyLeft = document.querySelector('.currency-left')
+
+// All-Currency
+const allCurrency = [
+    {
+     RUB: 'Российский рубль', USD: 'Доллар США', EUR: 'Евро', GBP: 'Фунт стерлингов', AUD: 'Австралийский доллар', AZN: 'Азербаджанский манат',
+     AMD: 'Армянский драм', BYN: 'Белорусский рубль', BGN: 'Болгарский лев', BRL: 'Бразильский реал', HUF: 'Венгерский форинт',
+     KRW: 'Вон Республики Корея', DKK: 'Датская крона', INR: 'Индийская рупия', KZT: 'Казахстанский тенге', CAD: 'Канадский доллар',
+     KGS: 'Киргизский сом', CNY: 'Китайский юань', MDL: 'Молдавсский лей', RON: 'Новый румынский лей', TMT: 'Новый туркменский манат',
+     NOK: 'Норвежская крона', PLN: 'Польский злотый', SGD: 'Сингапурский доллар', TJS: 'Таджикский сомони', UZS: 'Узбекский сум',
+     UAH: 'Украинская гривна', CZK: 'Чешская крона', SEK: 'Шведская крона', CHF: 'Швецарский франк', ZAR: 'Южноафриканский ренд',
+     JPY: 'Японская иена',
+    }
+];
+
 // #4 Основные функции, отвечающие за логику приложения
 
 const getData = async () => {
-    const leftSelectedCurrency = getLeftSelectedCurrency();
-    const rightSelectedCurrency = getRightSelectedCurrency();
+    try {
+        const leftSelectedCurrency = getLeftSelectedCurrency();
+        const rightSelectedCurrency = getRightSelectedCurrency();
 
-    const URL = getUrl(leftSelectedCurrency);
-    // console.log('### URL', URL);
+        const URL = getUrl(leftSelectedCurrency);
+        const response = await fetch(URL);
+        const { conversion_rates } = await response.json();
+        CONVERSION_RATES = conversion_rates;
 
-    const response = await fetch(URL);
-    const { conversion_rates } = await response.json();
-    CONVERSION_RATES = conversion_rates;
-    console.log('### conversion_rates', conversion_rates);
-
-    rightInput.value = leftInput.value * CONVERSION_RATES[rightSelectedCurrency];
+        rightInput.value = leftInput.value * CONVERSION_RATES[rightSelectedCurrency];
+    } catch(e) {
+        console.log(e, "Error");
+    }
 };
 
-getData();
+getData(); 
 
 leftPanelBlock.addEventListener('click', (event) => {
     if (event.target.classList.contains('currency-checked')) return;
 
-    const selectedCurrency = event.target.dataset.currency
-    leftPanelCurrencies.forEach(({ currency, checked  }, index) =>
-        leftPanelCurrencies[index].checked = currency === selectedCurrency
-    );
+        if (!event.target.classList.contains('left__arrow__down')) {
+            let trueCurrency = 0;
+            const selectedCurrency = event.target.dataset.currency
+            leftPanelCurrencies.forEach(({ currency, checked  }, index) => leftPanelCurrencies[index].checked = currency === selectedCurrency);
+            leftPanelCurrencies.forEach((item) => item.checked === false ? trueCurrency += 1 : '');
 
+            if (trueCurrency === 4) {
+                leftPanelCurrencies[leftPanelCurrencies.length -1].checked = true;
+                leftPanelCurrencies[leftPanelCurrencies.length - 1].currency = selectedCurrency;
+            }
+        };
     rerenderLeftPanel();
     getData();
+    
 });
 
 rightPanelBlock.addEventListener('click', (event) => {
     if (event.target.classList.contains('currency-checked')) return;
 
-    const selectedCurrency = event.target.dataset.currency;
-    rightPanelCurrencies.forEach(({ currency, checked  }, index) =>
-        rightPanelCurrencies[index].checked = currency === selectedCurrency
-    );
+    if (!event.target.classList.contains('left__arrow__down')) {
+        let trueCurrency = 0;
+        const selectedCurrency = event.target.dataset.currency;
+        rightPanelCurrencies.forEach(({ currency, checked  }, index) => rightPanelCurrencies[index].checked = currency === selectedCurrency);
+        rightPanelCurrencies.forEach((item) => item.checked === false ? trueCurrency += 1 : '');
 
+        if (trueCurrency === 4) {
+            rightPanelCurrencies[rightPanelCurrencies.length -1].checked = true;
+            rightPanelCurrencies[rightPanelCurrencies.length - 1].currency = selectedCurrency;
+        };
+        rightInput.value = leftInput.value * CONVERSION_RATES[selectedCurrency];
+    };
     rerenderRightPanel();
-    rightInput.value = leftInput.value * CONVERSION_RATES[selectedCurrency];
 });
+
 
 leftInput.addEventListener('input', (event) => {
     const rightCurrency = getRightSelectedCurrency();
 
     const newValue = leftInput.value;
-    console.log('### newValue', newValue);
+    // console.log('### newValue', newValue);
     rightInput.value = newValue * CONVERSION_RATES[rightCurrency];
 });
 
-                    // REVERS
-revers.addEventListener('click', (event) => {
-    // Меняем местами значения input
-    const tempInputValue = leftInput.value;
-    leftInput.value = rightInput.value;
-    rightInput.value = tempInputValue;
+                        // REVERS
+    revers.addEventListener('click', (event) => {
+        // Меняем местами значения input
+        const tempInputValue = leftInput.value;
+        leftInput.value = rightInput.value;
+        rightInput.value = tempInputValue;
 
-    // Меняем местами панели валют
-    let temp1;
-    let temp2;
-    rightPanelCurrencies.forEach((item, index) => {
-        if (item.checked) {
-            rightPanelCurrencies[index].checked = false;
-            temp1 = rightPanelCurrencies[index].currency;
-        };
+        // Переменные для хнанения состояния
+        let oldRightCurrency;//byn
+        let oldLeftCurrency;//rub
+        
+        // Меняем местами панели валют
+
+        // Правая сторона выбора валюты 
+        rightPanelCurrencies.forEach((item) => {
+            if (item.checked) {
+                oldRightCurrency = item.currency;
+                item.checked = false;
+            };
+            
+        });
+        
+        // Левая сторона выбора валюты
+        leftPanelCurrencies.forEach((item) => {
+            if (item.checked) {
+                oldLeftCurrency = item.currency;
+                item.checked = false;  
+            };
+        });
+
+         
+        rightPanelCurrencies.forEach((item, index) => {
+            let countItemCheckedRight = [];
+            if (item.currency === oldLeftCurrency) {
+                countItemCheckedRight.push(index);
+                item.checked = true;
+            };
+            const ifRightPanelIncludeCurrencie = rightPanelCurrencies.find((item) => item.currency === oldLeftCurrency);
+            if (!ifRightPanelIncludeCurrencie) {
+                rightPanelCurrencies[rightPanelCurrencies.length - 1].currency = oldLeftCurrency;
+                rightPanelCurrencies[rightPanelCurrencies.length - 1].checked = true;
+            };
+        });
+
+               
+        leftPanelCurrencies.forEach((item) => {
+            let countItemCheckedLeft = [];
+            if (item.currency === oldRightCurrency) {
+                countItemCheckedLeft += 1;
+                item.checked = true;
+            };
+            const ifLeftPanelIncludeCurrencie = leftPanelCurrencies.find((item) => item.currency === oldRightCurrency);
+                if (!ifLeftPanelIncludeCurrencie) {
+                    leftPanelCurrencies[leftPanelCurrencies.length - 1].currency = oldRightCurrency;
+                    leftPanelCurrencies[leftPanelCurrencies.length - 1].checked = true;
+                };                
+        });
+        
+        // Повторно отрендерим обе панели
+        rerenderLeftPanel();
+        rerenderRightPanel();
     });
-    
 
-    leftPanelCurrencies.forEach((item, index) => {
-        if (item.checked) {
-            leftPanelCurrencies[index].checked = false;
-            temp2 = leftPanelCurrencies[index].currency;
-        };
-    });
 
-    rightPanelCurrencies.forEach((item) => item.currency === temp2 ? item.checked = true : "");
-    leftPanelCurrencies.forEach((item) => item.currency === temp1 ? item.checked = true : "");
 
-    // Повторно отрендерим обе панели
-    rerenderLeftPanel();
-    rerenderRightPanel();
+                                    // Функция создания modalWindow 
+    function renderBlockWindow() {
+        Object.keys(allCurrency[0]).forEach((item, index) => {
+            let rendermodalWindow =   document.querySelector('.modalWindow');
+            let value = allCurrency[0][item];
+            if (index <= 10) {
+                rendermodalWindow.innerHTML += ` <div class="leftOpenModal" data-currency="${item}" >${value}
+                    <span class="leftOpenModal bold" data-currency="${item}">${item}</span>
+                    </div>
+                `;
+            } else if (index <= 20) {
+                rendermodalWindow.innerHTML += ` <div class="centrOpenModal" data-currency="${item}">${value}  
+                    <span class="bold" data-currency="${item}">${item}</span>
+                    </div>
+                `;
+            } else {
+                rendermodalWindow.innerHTML += ` <div class="rightOpenModal" data-currency="${item}">${value}  
+                    <span class="bold" data-currency="${item}">${item}</span>
+                    </div>
+                `;
+            };
+        });
+    };
+
+
+
+                    // leftArrowDown.addEventListener
+leftArrowDown.addEventListener('click', (event) => {
+    isLeftModalOpen = true;
+    leftArrowDown.classList.add('currency-checked');
+    leftArrowDown.innerHTML = `arrow_upward <div class="modalWindow"></div>`;  
+    renderBlockWindow();   
 });
 
+
+
+                    // rightArrowDown.addEventListener
+rightArrowDown.addEventListener('click', (event) => {
+    isRightModalOpen = true;
+    rightArrowDown.classList.add('currency-checked');
+    rightArrowDown.innerHTML = `arrow_upward  <div class="modalWindow"></div>`; 
+    renderBlockWindow(); 
+});
+// setInterval(() => elem.hidden = !elem.hidden, 1000);
+
 // TODO LIST
-// TODO: обработчик события на стрелку reverse (по середине)
-// TODO: модальное окно и логика выбора новый валюты (встаёт в конец панели + эта валюта становится выбрана)
+
+
 // TODO: обработать запрет на ввод букв в каждый инпут
 // TODO: красивое форматирование чисел в инпутах (Intl.NumberFormat) + только 2 числа после точки
 // TODO: красивая вёрстка!!!
+
+//  TODO: обработчик события на стрелку reverse (по середине)
+// TODO: модальное окно и логика выбора новый валюты (встаёт в конец панели + эта валюта становится выбрана)
 
 // !!! !!! !!! DIMA !!! !!! !!!
 // {
@@ -268,7 +383,7 @@ revers.addEventListener('click', (event) => {
 //             <div class="modalLeft BRL">Бразильский реал<div class="modalLeft" style="font-weight: bold;">BRL</div></div>
 //             <div class="modalLeft HUF">Венгерский форинт<div class="modalLeft" style="font-weight: bold;">HUF</div></div>
 //         </div>
-//
+
 //         <div class="calc__currency__column__centr">
 //             <div class="modalLeft KRW">Вон Республики Корея<div class="modalLeft" style="font-weight: bold;">KRW</div></div>
 //             <div class="modalLeft DKK">Датская крона<div class="modalLeft" style="font-weight: bold;">DKK</div></div>
