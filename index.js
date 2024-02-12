@@ -136,10 +136,10 @@ renderLeftBox();
 const leftArrowDown = document.querySelector('.left__arrow__down');
 const rightArrowDown = document.querySelector('.right__arrow__down');
 const currencyLeft = document.querySelector('.currency-left')
+const currencyRight = document.querySelector('.currency-right')
 
 // All-Currency
-const allCurrency = [
-    {
+const allCurrency = {
      RUB: 'Российский рубль', USD: 'Доллар США', EUR: 'Евро', GBP: 'Фунт стерлингов', AUD: 'Австралийский доллар', AZN: 'Азербаджанский манат',
      AMD: 'Армянский драм', BYN: 'Белорусский рубль', BGN: 'Болгарский лев', BRL: 'Бразильский реал', HUF: 'Венгерский форинт',
      KRW: 'Вон Республики Корея', DKK: 'Датская крона', INR: 'Индийская рупия', KZT: 'Казахстанский тенге', CAD: 'Канадский доллар',
@@ -147,11 +147,9 @@ const allCurrency = [
      NOK: 'Норвежская крона', PLN: 'Польский злотый', SGD: 'Сингапурский доллар', TJS: 'Таджикский сомони', UZS: 'Узбекский сум',
      UAH: 'Украинская гривна', CZK: 'Чешская крона', SEK: 'Шведская крона', CHF: 'Швецарский франк', ZAR: 'Южноафриканский ренд',
      JPY: 'Японская иена',
-    }
-];
+    };
 
 // #4 Основные функции, отвечающие за логику приложения
-
 const getData = async () => {
     try {
         const leftSelectedCurrency = getLeftSelectedCurrency();
@@ -166,126 +164,122 @@ const getData = async () => {
     } catch(e) {
         console.log(e, "Error");
     }
+    reversInputsInfo();
 };
-
 getData(); 
 
+
+
+// Обработчик события на leftPanelBlock, выбор из 4 валют только!
 leftPanelBlock.addEventListener('click', (event) => {
     if (event.target.classList.contains('currency-checked')) return;
-
-        if (!event.target.classList.contains('left__arrow__down')) {
-            let trueCurrency = 0;
-            const selectedCurrency = event.target.dataset.currency
-            leftPanelCurrencies.forEach(({ currency, checked  }, index) => leftPanelCurrencies[index].checked = currency === selectedCurrency);
-            leftPanelCurrencies.forEach((item) => item.checked === false ? trueCurrency += 1 : '');
-
-            if (trueCurrency === 4) {
-                leftPanelCurrencies[leftPanelCurrencies.length -1].checked = true;
-                leftPanelCurrencies[leftPanelCurrencies.length - 1].currency = selectedCurrency;
-            }
-        };
+    
+// Если не нажата стрелка вниз с лево, то в leftPanelCurrencies меняем checked на то что выбрано из 4-х!
+    if (!event.target.classList.contains('left__arrow__down')) {
+        const selectedCurrency = event.target.dataset.currency
+        leftPanelCurrencies.forEach(({ currency }, index) => leftPanelCurrencies[index].checked = currency === selectedCurrency);
+    };
     rerenderLeftPanel();
     getData();
-    
 });
 
+
+
+
+// Обработчик события на rightPanelBlock, выбор из 4 валют только!
 rightPanelBlock.addEventListener('click', (event) => {
-    if (event.target.classList.contains('currency-checked')) return;
+    if (event.target.classList.contains('currency-checked') && !event.target.classList.contains('material-symbols-outlined')) return;
 
-    if (!event.target.classList.contains('left__arrow__down')) {
-        let trueCurrency = 0;
+// Если не нажата стрелка вниз с право, то в rightPanelCurrencies меняем checked на то что выбрано из 4-х!
+    if (!event.target.classList.contains('right__arrow__down')) {
         const selectedCurrency = event.target.dataset.currency;
-        rightPanelCurrencies.forEach(({ currency, checked  }, index) => rightPanelCurrencies[index].checked = currency === selectedCurrency);
-        rightPanelCurrencies.forEach((item) => item.checked === false ? trueCurrency += 1 : '');
-
-        if (trueCurrency === 4) {
-            rightPanelCurrencies[rightPanelCurrencies.length -1].checked = true;
-            rightPanelCurrencies[rightPanelCurrencies.length - 1].currency = selectedCurrency;
-        };
+        rightPanelCurrencies.forEach(({ currency }, index) => rightPanelCurrencies[index].checked = currency === selectedCurrency);
         rightInput.value = leftInput.value * CONVERSION_RATES[selectedCurrency];
     };
     rerenderRightPanel();
 });
 
 
-leftInput.addEventListener('input', (event) => {
-    const rightCurrency = getRightSelectedCurrency();
 
+// Обработчик события на leftInput 
+leftInput.addEventListener('input', () => {
+    const rightCurrency = getRightSelectedCurrency();
     const newValue = leftInput.value;
-    // console.log('### newValue', newValue);
     rightInput.value = newValue * CONVERSION_RATES[rightCurrency];
 });
 
+
+
                         // REVERS
-    revers.addEventListener('click', (event) => {
-        // Меняем местами значения input
-        const tempInputValue = leftInput.value;
-        leftInput.value = rightInput.value;
-        rightInput.value = tempInputValue;
+revers.addEventListener('click', () => {
+    // Меняем местами значения input
+    const tempInputValue = leftInput.value;
+    leftInput.value = rightInput.value;
+    rightInput.value = tempInputValue;
 
-        // Переменные для хнанения состояния
-        let oldRightCurrency;//byn
-        let oldLeftCurrency;//rub
+    // Переменные для хнанения состояния
+    let oldRightCurrency = getRightSelectedCurrency();//byn
+    let oldLeftCurrency = getLeftSelectedCurrency();//rub
+    
+    // Меняем местами панели валют
+
+    // Правая сторона выбора валюты 
+    rightPanelCurrencies.forEach((i) => i.checked = false); 
+    console.log(rightPanelCurrencies, 'rightPanelCurrencies rightPanelCurrencies')
+
+    // Левая сторона выбора валюты
+    leftPanelCurrencies.forEach((i) => i.checked = false);
+    console.log(leftPanelCurrencies, 'leftPanelCurrencies leftPanelCurrencies')
+    rerenderLeftPanel();
+    rerenderRightPanel();
         
-        // Меняем местами панели валют
-
-        // Правая сторона выбора валюты 
-        rightPanelCurrencies.forEach((item) => {
-            if (item.checked) {
-                oldRightCurrency = item.currency;
-                item.checked = false;
-            };
-            
-        });
-        
-        // Левая сторона выбора валюты
-        leftPanelCurrencies.forEach((item) => {
-            if (item.checked) {
-                oldLeftCurrency = item.currency;
-                item.checked = false;  
-            };
-        });
-
-         
-        rightPanelCurrencies.forEach((item, index) => {
-            let countItemCheckedRight = [];
-            if (item.currency === oldLeftCurrency) {
-                countItemCheckedRight.push(index);
-                item.checked = true;
-            };
-            const ifRightPanelIncludeCurrencie = rightPanelCurrencies.find((item) => item.currency === oldLeftCurrency);
-            if (!ifRightPanelIncludeCurrencie) {
-                rightPanelCurrencies[rightPanelCurrencies.length - 1].currency = oldLeftCurrency;
-                rightPanelCurrencies[rightPanelCurrencies.length - 1].checked = true;
-            };
-        });
-
-               
-        leftPanelCurrencies.forEach((item) => {
-            let countItemCheckedLeft = [];
-            if (item.currency === oldRightCurrency) {
-                countItemCheckedLeft += 1;
-                item.checked = true;
-            };
-            const ifLeftPanelIncludeCurrencie = leftPanelCurrencies.find((item) => item.currency === oldRightCurrency);
-                if (!ifLeftPanelIncludeCurrencie) {
-                    leftPanelCurrencies[leftPanelCurrencies.length - 1].currency = oldRightCurrency;
-                    leftPanelCurrencies[leftPanelCurrencies.length - 1].checked = true;
-                };                
-        });
-        
-        // Повторно отрендерим обе панели
-        rerenderLeftPanel();
-        rerenderRightPanel();
+    rightPanelCurrencies.forEach((item) => {
+        if (item.currency === oldLeftCurrency) {
+            item.checked = true;
+        };
+        const rightPanelIncludeCurrencie = rightPanelCurrencies.find((item) => item.currency === oldLeftCurrency);
+        if (!rightPanelIncludeCurrencie) {
+            rightPanelCurrencies[rightPanelCurrencies.length - 1].currency = oldLeftCurrency;
+            rightPanelCurrencies[rightPanelCurrencies.length - 1].checked = true;
+        };
     });
 
+            
+    leftPanelCurrencies.forEach((item) => {
+        
+        if (item.currency === oldRightCurrency) {
+            item.checked = true;
+        };
+        const leftPanelIncludeCurrencie = leftPanelCurrencies.find((item) => item.currency === oldRightCurrency);
+            if (!leftPanelIncludeCurrencie) {
+                leftPanelCurrencies[leftPanelCurrencies.length - 1].currency = oldRightCurrency;
+                leftPanelCurrencies[leftPanelCurrencies.length - 1].checked = true;
+            };                
+    });
+    
+    // Повторно отрендерим обе панели
+    rerenderLeftPanel();
+    rerenderRightPanel();
+    reversInputsInfo();
+});
+
+                // REVERS INFO inputs
+    function  reversInputsInfo(params) {
+        const currencyInfoLeft = document.querySelector('.js-converter-rate-from-left');
+        const currencyInfoRight = document.querySelector('.js-converter-rate-from-right');
+        let divideTheRubleByTheDollar = CONVERSION_RATES[getLeftSelectedCurrency()] / CONVERSION_RATES[getRightSelectedCurrency()];
+
+        currencyInfoLeft.innerHTML = `1 ${getLeftSelectedCurrency()} = ${divideTheRubleByTheDollar.toFixed(3)} ${" " + getRightSelectedCurrency()}`;
+        currencyInfoRight.innerHTML = `1  ${getRightSelectedCurrency()} = ${CONVERSION_RATES[getRightSelectedCurrency()].toFixed(3)} ${" " + getLeftSelectedCurrency()}`;
+    };
+    
 
 
                                     // Функция создания modalWindow 
     function renderBlockWindow() {
-        Object.keys(allCurrency[0]).forEach((item, index) => {
-            let rendermodalWindow =   document.querySelector('.modalWindow');
-            let value = allCurrency[0][item];
+        Object.keys(allCurrency).forEach((item, index) => {
+            const rendermodalWindow = document.querySelector('.modalWindow');
+            const value = allCurrency[item];
             if (index <= 10) {
                 rendermodalWindow.innerHTML += ` <div class="leftOpenModal" data-currency="${item}" >${value}
                     <span class="leftOpenModal bold" data-currency="${item}">${item}</span>
@@ -307,23 +301,58 @@ leftInput.addEventListener('input', (event) => {
 
 
 
-                    // leftArrowDown.addEventListener
-leftArrowDown.addEventListener('click', (event) => {
-    isLeftModalOpen = true;
-    leftArrowDown.classList.add('currency-checked');
-    leftArrowDown.innerHTML = `arrow_upward <div class="modalWindow"></div>`;  
-    renderBlockWindow();   
+            //         leftArrowDown.addEventListener
+leftArrowDown.addEventListener('click', () => {
+    isLeftModalOpen = !isLeftModalOpen;
+
+    if (isLeftModalOpen) {
+        // alert('KY-KY-ept')
+        leftArrowDown.classList.add('currency-checked');
+        leftArrowDown.innerHTML = `arrow_upward <div class="modalWindow"></div>`;  
+        renderBlockWindow();
+    }else if (!isLeftModalOpen) {
+        rightPanelCurrencies[rightPanelCurrencies.length - 1].checked = false; 
+        const removeModalWindow = document.querySelector('.modalWindow');
+        removeModalWindow.remove();
+        leftArrowDown.textContent = 'arrow_downward';
+        rerenderLeftPanel();
+    };
+    
 });
 
 
 
                     // rightArrowDown.addEventListener
 rightArrowDown.addEventListener('click', (event) => {
-    isRightModalOpen = true;
-    rightArrowDown.classList.add('currency-checked');
-    rightArrowDown.innerHTML = `arrow_upward  <div class="modalWindow"></div>`; 
+    isRightModalOpen = !isRightModalOpen;
+    isRightModalOpen == true ? rightArrowDown.classList.add('currency-checked') : '';
+    // console.log(rightArrowDown.classList.contains('currency-checked'), 'rightArrowDown.classList')
+
+    isRightModalOpen == true ? rightArrowDown.innerHTML = `arrow_upward  <div class="modalWindow"></div>` : ''; 
     renderBlockWindow(); 
+
+    const removeModalWindow = document.querySelector('.modalWindow');
+    isRightModalOpen === false ? removeModalWindow.remove() : ""; 
 });
+
+
+// // Обработчик события на modalWindow, если нажать на другую область, то он должен скрыться
+document.addEventListener('click', (event) => {
+    if (event.target.closest('.currency-left') || event.target.closest('.currency-right')) return;
+
+    if (isLeftModalOpen || isRightModalOpen) {
+        rerenderLeftPanel();
+        rerenderRightPanel();
+        if (!event.target.closest('.modalWindow')) {
+            isLeftModalOpen = false;
+            isRightModalOpen = false;
+            rightArrowDown.innerText = 'arrow_downward';
+            leftArrowDown.innerText = 'arrow_downward';              
+        };        
+    };
+});
+
+
 // setInterval(() => elem.hidden = !elem.hidden, 1000);
 
 // TODO LIST
@@ -335,6 +364,9 @@ rightArrowDown.addEventListener('click', (event) => {
 
 //  TODO: обработчик события на стрелку reverse (по середине)
 // TODO: модальное окно и логика выбора новый валюты (встаёт в конец панели + эта валюта становится выбрана)
+
+
+
 
 // !!! !!! !!! DIMA !!! !!! !!!
 // {
