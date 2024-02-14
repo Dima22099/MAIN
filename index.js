@@ -8,7 +8,9 @@ const mainBlock = document.querySelector('.main');
 const leftInput = document.querySelector('.left-input');
 const rightInput = document.querySelector('.right-input');
 const revers = document.querySelector('.revers');
-
+const calcDate = document.querySelector('.calc__period');
+const currencyRight = document.querySelector('.currency-right');
+const currencyLeft = document.querySelector('.currency-left');
 
 let leftPanelBlock;
 let rightPanelBlock;
@@ -157,69 +159,85 @@ const getData = async () => {
         const response = await fetch(URL);
         const { conversion_rates } = await response.json();
         CONVERSION_RATES = conversion_rates;
-
-        rightInput.value = leftInput.value * CONVERSION_RATES[rightSelectedCurrency];
+        rightInput.value = (leftInput.value * CONVERSION_RATES[rightSelectedCurrency]).toFixed(1);
     } catch(e) {
         console.log(e, "Error");
     }
-    reversInputsInfo();
+    renderInputsInfo(); 
 };
 getData(); 
 
-
-
-// Обработчик события на leftPanelBlock, выбор из 4 валют только!
-leftPanelBlock.addEventListener('click', (event) => {
+// Обработчик события на leftPanelBlock и left__arrow__down(modalWindow)
+function handleClickLeft(event) {
+    // Если нажатый элемент currency-checked и не нажато на кнопку left__arrow__down то выходим!
     if (event.target.classList.contains('currency-checked') && !event.target.classList.contains('left__arrow__down')) return;
-    
-// Если не нажата стрелка вниз с лево, то в leftPanelCurrencies меняем checked на то что выбрано из 4-х!
+
+    // Если нажата стрелка вниз с лево
     if (event.target.classList.contains('left__arrow__down')) {
         isLeftModalOpen = !isLeftModalOpen;
-
-        if (isLeftModalOpen) {
+        
+        //isLeftModalOpen === true ? тогда кнопка currency-checked, создаем modalWindow и отрисовываем renderBlockWindow 
+        if (isLeftModalOpen) { 
             event.target.classList.add('currency-checked');
             event.target.innerHTML = `arrow_upward <div class="modalWindow"></div>`;
             renderBlockWindow();
-        } else {
-            const modalWindow = document.querySelector('.modalWindow');
-            modalWindow.remove();
+            // rerenderLeftPanel();
+            // если isLeftModalOpen === false то удаляем modalWindow
+        } else { 
+             leftArrowDown.innerText = 'arrow_downward';
             rerenderLeftPanel();
+            
         }
     } else {
-        const selectedCurrency = event.target.dataset.currency
-        leftPanelCurrencies.forEach(({ currency }, index) => leftPanelCurrencies[index].checked = currency === selectedCurrency);
+        // Выбор из 4-х базовых валют в слючае если не нажата кнопка-стрелка вниз с лево
+        const selectedCurrency = event.target.dataset.currency;
 
+        // event.target.dataset.currency == undefined ? selectedCurrency = event.target.dataset.currency : selectedCurrency = leftPanelCurrencies[0].currency;
+        leftPanelCurrencies.forEach(({ currency }, index) => leftPanelCurrencies[index].checked = currency === selectedCurrency);
         rerenderLeftPanel();
         getData();
     }
-});
+};
+leftPanelBlock.addEventListener('click', handleClickLeft)
 
 
+// Обработчик события на rightPanelBlock и right__arrow__down(modalWindow)
+function handleClickRight(event) {
+        // Если нажатый элемент currency-checked и не нажато на кнопку left__arrow__down то выходим!
+    if (event.target.classList.contains('currency-checked') && !event.target.classList.contains('right__arrow__down')) return;
+            
+// Если нажата стрелка вниз с право
+    if (event.target.classList.contains('right__arrow__down')) {
+        isRightModalOpen = !isRightModalOpen;
+        
+        //isRightModalOpen === true ? тогда кнопка currency-checked, создаем modalWindow и отрисовываем renderBlockWindow
+        if (isRightModalOpen) {           
+            event.target.classList.add('currency-checked');
+            event.target.innerHTML = `arrow_upward <div class="modalWindow"></div>`;
+            renderBlockWindow();
 
-
-// Обработчик события на rightPanelBlock, выбор из 4 валют только!
-rightPanelBlock.addEventListener('click', (event) => {
-    if (event.target.classList.contains('currency-checked') && !event.target.classList.contains('material-symbols-outlined')) return;
-
-// Если не нажата стрелка вниз с право, то в rightPanelCurrencies меняем checked на то что выбрано из 4-х!
-    if (!event.target.classList.contains('right__arrow__down')) {
+            //isRightModalOpen === false то удаляем modalWindow
+        } else { 
+            rightArrowDown.innerText = 'arrow_downward';
+            rerenderRightPanel();
+        }        
+        
+        // Выбор из 4-х базовых валют в слючае если не создано modalWindow
+    } else {   
         const selectedCurrency = event.target.dataset.currency;
         rightPanelCurrencies.forEach(({ currency }, index) => rightPanelCurrencies[index].checked = currency === selectedCurrency);
+        // Отображение информации о конвертации НА ПРАВОМ rightInput 
         rightInput.value = leftInput.value * CONVERSION_RATES[selectedCurrency];
-    };
-    rerenderRightPanel();
-});
+        rerenderRightPanel();
+        getData();
+        
+    }
+};
+rightPanelBlock.addEventListener('click', handleClickRight);
 
 
 
-// Обработчик события на leftInput 
-leftInput.addEventListener('input', () => {
-    const rightCurrency = getRightSelectedCurrency();
-    const newValue = leftInput.value;
-    rightInput.value = newValue * CONVERSION_RATES[rightCurrency];
-});
-
-                        // REVERS
+                        //  BUTTON <> REVERS
 revers.addEventListener('click', () => {
     // Меняем местами значения input
     const tempInputValue = leftInput.value;
@@ -234,19 +252,14 @@ revers.addEventListener('click', () => {
 
     // Правая сторона выбора валюты 
     rightPanelCurrencies.forEach((i) => i.checked = false); 
-    console.log(rightPanelCurrencies, 'rightPanelCurrencies rightPanelCurrencies')
 
     // Левая сторона выбора валюты
     leftPanelCurrencies.forEach((i) => i.checked = false);
-    console.log(leftPanelCurrencies, 'leftPanelCurrencies leftPanelCurrencies')
     rerenderLeftPanel();
     rerenderRightPanel();
         
     rightPanelCurrencies.forEach((item) => {
-        if (item.currency === oldLeftCurrency) {
-            item.checked = true;
-        }
-
+        if (item.currency === oldLeftCurrency) item.checked = true;
         const rightPanelIncludeCurrencie = rightPanelCurrencies.find((item) => item.currency === oldLeftCurrency);
 
         if (!rightPanelIncludeCurrencie) {
@@ -258,31 +271,50 @@ revers.addEventListener('click', () => {
             
     leftPanelCurrencies.forEach((item) => {
         
-        if (item.currency === oldRightCurrency) {
-            item.checked = true;
-        };
+        if (item.currency === oldRightCurrency) item.checked = true;
         const leftPanelIncludeCurrencie = leftPanelCurrencies.find((item) => item.currency === oldRightCurrency);
-            if (!leftPanelIncludeCurrencie) {
-                leftPanelCurrencies[leftPanelCurrencies.length - 1].currency = oldRightCurrency;
-                leftPanelCurrencies[leftPanelCurrencies.length - 1].checked = true;
-            };                
+
+        if (!leftPanelIncludeCurrencie) {
+            leftPanelCurrencies[leftPanelCurrencies.length - 1].currency = oldRightCurrency;
+            leftPanelCurrencies[leftPanelCurrencies.length - 1].checked = true;
+        };                
     });
     
     // Повторно отрендерим обе панели
     rerenderLeftPanel();
     rerenderRightPanel();
-    reversInputsInfo();
-});
+    renderInputsInfo();
+    getData();
 
-                // REVERS INFO inputs
-function  reversInputsInfo(params) {
+}); 
+
+                // Render INFO inputs
+function  renderInputsInfo() {
     const currencyInfoLeft = document.querySelector('.js-converter-rate-from-left');
     const currencyInfoRight = document.querySelector('.js-converter-rate-from-right');
-    let divideTheRubleByTheDollar = CONVERSION_RATES[getLeftSelectedCurrency()] / CONVERSION_RATES[getRightSelectedCurrency()];
+    let divideTheLeftCurrencyByTheRightCurrency = CONVERSION_RATES[getLeftSelectedCurrency()] / CONVERSION_RATES[getRightSelectedCurrency()];
 
-    currencyInfoLeft.innerHTML = `1 ${getLeftSelectedCurrency()} = ${divideTheRubleByTheDollar.toFixed(3)} ${" " + getRightSelectedCurrency()}`;
-    currencyInfoRight.innerHTML = `1  ${getRightSelectedCurrency()} = ${CONVERSION_RATES[getRightSelectedCurrency()].toFixed(3)} ${" " + getLeftSelectedCurrency()}`;
-}
+    currencyInfoLeft.innerHTML = `1 ${getLeftSelectedCurrency()} = ${CONVERSION_RATES[getRightSelectedCurrency()]} ${" " + getRightSelectedCurrency()}`; //toFixed(3)
+    currencyInfoRight.innerHTML = `1  ${getRightSelectedCurrency()} = ${divideTheLeftCurrencyByTheRightCurrency.toFixed(3)} ${" " + getLeftSelectedCurrency()}`;
+
+     // Дата и время 
+    let date = new Date();
+    let year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+    let hours = date.getHours();
+    let minute = date.getMinutes();
+    let formattedDate = (hours - 4) + ':' + minute + '  ' + day + '-' + month + '-' +  year;
+    calcDate.innerHTML += `${formattedDate}  GMT+03:00 <hr>`;
+};
+
+            // Обработчик события на leftInput 
+leftInput.addEventListener('input', () => {
+    const rightCurrency = getRightSelectedCurrency();
+    const newValue = leftInput.value;
+    rightInput.value = (newValue * CONVERSION_RATES[rightCurrency]).toFixed(3);
+});
+
 
                                     // Функция создания modalWindow
 function renderBlockWindow() {
@@ -298,42 +330,62 @@ function renderBlockWindow() {
                 </div>
          `;
     });
-
+                        // Выбор валюты из модального окна !
     rendermodalWindow.addEventListener('click', (event) => {
-        alert('TEST');
         // TODO: Логика клика по новой валюте
-    })
-}
 
-rightArrowDown.addEventListener('click', (event) => {
-    isRightModalOpen = !isRightModalOpen;
-    isRightModalOpen == true ? rightArrowDown.classList.add('currency-checked') : '';
-    // console.log(rightArrowDown.classList.contains('currency-checked'), 'rightArrowDown.classList')
+        // в константу записываем валюту которая выбрана из модального окна
+        const selectedCurrencyModalWindow = event.target.dataset.currency;
+    
+                // Пробую выбор из модального окна при отсутсвие базовых 4-х валют с ЛЕВО
+                    // Выбор из модального окна если открыто с левой стороны 
+        if (isLeftModalOpen && (selectedCurrencyModalWindow !== 'RUB' && selectedCurrencyModalWindow !== 'USD' 
+            && selectedCurrencyModalWindow !== 'EUR' && selectedCurrencyModalWindow !== 'GBP')) {
 
-    isRightModalOpen == true ? rightArrowDown.innerHTML = `arrow_upward  <div class="modalWindow"></div>` : ''; 
-    renderBlockWindow(); 
-
-    const removeModalWindow = document.querySelector('.modalWindow');
-    isRightModalOpen === false ? removeModalWindow.remove() : ""; 
-});
+            leftPanelCurrencies.forEach((item) => item.checked = false);
+            leftPanelCurrencies[leftPanelCurrencies.length - 1].currency = selectedCurrencyModalWindow;
+            leftPanelCurrencies[leftPanelCurrencies.length - 1].checked = true;
+        }
+            // Выбор из модального окна если открыто с правой стороны
+        if (isRightModalOpen) {
+            rightPanelCurrencies.forEach((item) => item.checked = false);
+            rightPanelCurrencies[rightPanelCurrencies.length - 1].currency = selectedCurrencyModalWindow;
+            rightPanelCurrencies[rightPanelCurrencies.length - 1].checked = true;
+        }
+        getData();
+        renderInputsInfo();
+    });
+};
 
 
 // // Обработчик события на modalWindow, если нажать на другую область, то он должен скрыться
-document.addEventListener('click', (event) => {
-    if (event.target.closest('.currency-left') || event.target.closest('.currency-right')) return;
-
-    if (isLeftModalOpen || isRightModalOpen) {
-        rerenderLeftPanel();
-        rerenderRightPanel();
+function closeModalWindow(event) {
+    
+    if (event.target.classList.contains('.modalWindow')) {
+        // Проверяем, был ли клик вне области modalWindow
+        // closeModal(); // Вызываем функцию закрытия модального окна
+        // leftArrowDown.innerText = 'arrow_downward'; 
+        // isLeftModalOpen = false;
+        // if (event.target.closest('.currency-left') || event.target.closest('.currency-right'))
+        
+        // alert(123)
         if (!event.target.closest('.modalWindow')) {
-            isLeftModalOpen = false;
-            isRightModalOpen = false;
-            rightArrowDown.innerText = 'arrow_downward';
-            leftArrowDown.innerText = 'arrow_downward';              
-        };        
-    };
-});
+            const modalWindow = document.querySelector('.modalWindow');
+            // modalWindow.remove();
+            modalWindow.style.display = 'none';
+            console.log(modalWindow, 'modalWindow')
+            // leftPanelCurrencies[leftPanelCurrencies.length].checked = false;
+            // console.log(leftPanelCurrencies.nextElementSibling, '2131')
+            alert('a vot i ya!!!!');
+        }
+        
+    }
+};
 
+document.addEventListener('click', closeModalWindow);
+
+
+   
 
 // setInterval(() => elem.hidden = !elem.hidden, 1000);
 
@@ -347,8 +399,41 @@ document.addEventListener('click', (event) => {
 //  TODO: обработчик события на стрелку reverse (по середине)
 // TODO: модальное окно и логика выбора новый валюты (встаёт в конец панели + эта валюта становится выбрана)
 
+// Обработчик события на выбор валют с право!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
+{
+    // Обработчик события на rightPanelBlock
+
+// rightPanelBlock.addEventListener('click', (event) => {
+//     // Если нажатый элемент currency-checked и не нажато на кнопку left__arrow__down то выходим!
+//     if (event.target.classList.contains('currency-checked') && !event.target.classList.contains('right__arrow__down')) return;
+//             alert('a vot i ya');
+// // Если не нажата стрелка вниз с право, то в rightPanelCurrencies меняем checked на то что выбрано из 4-х!
+//     if (event.target.classList.contains('right__arrow__down')) {
+//         isRightModalOpen = !isRightModalOpen;
+
+//         if (isRightModalOpen) { // true ? создаем modalWindow и отрисовываем renderBlockWindow
+//             event.target.classList.add('currency-checked');
+//             event.target.innerHTML = `arrow_upward <div class="modalWindow"></div>`;
+//             renderBlockWindow();
+//         } else { // если false то удаляем modalWindow
+//             const modalWindow = document.querySelector('.modalWindow');
+//             // modalWindow.remove();
+//             rightArrowDown.innerText = 'arrow_downward';
+//             rerenderRightPanel();
+//         }        
+        
+//     } else {   // Выбор из 4-х базовых валют в слючае если не создано modalWindow
+//         const selectedCurrency = event.target.dataset.currency;
+//         rightPanelCurrencies.forEach(({ currency }, index) => rightPanelCurrencies[index].checked = currency === selectedCurrency);
+//         // Отображение информации о конвертации НА ПРАВОМ rightInput 
+//         rightInput.value = leftInput.value * CONVERSION_RATES[selectedCurrency];
+//         rerenderRightPanel();
+//         getData();
+//     }
+// });
+}
 
 // !!! !!! !!! DIMA !!! !!! !!!
 // {
@@ -581,7 +666,7 @@ document.addEventListener('click', (event) => {
 // reverse.addEventListener('click', () => {
 //     reversInput();
 //     reversClassas();
-//     reversInputsInfo();
+//     renderInputsInfo();
 // });
 //
 //
@@ -608,8 +693,8 @@ document.addEventListener('click', (event) => {
 //         currencyInfoLeft.innerHTML = `1  ${stateToReverseLeft} = ${data.conversion_rates[stateToReverseRight].toFixed(3)} ${" " + stateToReverseRight} `
 //         // уточнение курса 1 валюты к другой, соотношение (ПРАВАЯ сторона)
 //         const currencyInfoRight = document.querySelector('.js-converter-rate-from-right');
-//         let divideTheRubleByTheDollar = data.conversion_rates[stateToReverseLeft] / data.conversion_rates[stateToReverseRight];
-//         currencyInfoRight.innerHTML = `1 ${stateToReverseRight} = ${divideTheRubleByTheDollar.toFixed(3)} ${" " + stateToReverseLeft}`;
+//         let divideTheLeftCurrencyByTheRightCurrency = data.conversion_rates[stateToReverseLeft] / data.conversion_rates[stateToReverseRight];
+//         currencyInfoRight.innerHTML = `1 ${stateToReverseRight} = ${divideTheLeftCurrencyByTheRightCurrency.toFixed(3)} ${" " + stateToReverseLeft}`;
 //
 //         // Отлавливаем ошибки
 //     } catch (e)
@@ -620,10 +705,10 @@ document.addEventListener('click', (event) => {
 // conversionRrates();
 //
 //
-// // function  reversInputsInfo(params) {
-// //     let divideTheRubleByTheDollar = data.conversion_rates[stateToReverseLeft] / data.conversion_rates[stateToReverseRight];
+// // function  renderInputsInfo(params) {
+// //     let divideTheLeftCurrencyByTheRightCurrency = data.conversion_rates[stateToReverseLeft] / data.conversion_rates[stateToReverseRight];
 // //         const currencyInfoLeft = document.querySelector('.js-converter-rate-from-left');
-// //         currencyInfoLeft.innerHTML = `1 ${stateToReverseRight} = ${divideTheRubleByTheDollar.toFixed(3)} ${" " + stateToReverseLeft}`;
+// //         currencyInfoLeft.innerHTML = `1 ${stateToReverseRight} = ${divideTheLeftCurrencyByTheRightCurrency.toFixed(3)} ${" " + stateToReverseLeft}`;
 //
 // //         const currencyInfoRight = document.querySelector('.js-converter-rate-from-right');
 // //         currencyInfoRight.innerHTML = `1  ${stateToReverseLeft} = ${data.conversion_rates[stateToReverseRight].toFixed(3)} ${" " + stateToReverseRight}`;

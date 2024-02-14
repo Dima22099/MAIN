@@ -83,14 +83,12 @@ h2, h3, h4 {
 
 
 .right-input, .left-input {
-    width: 300px;
+    width: 285px;
+    height: 55px;
     font-size: 30px;
-    /* height: 100px; */
     text-align: left;
-    /* border: 2px rgb(25, 20, 165) solid; */
-    /* margin: 24px 0; */
-    padding: 15px 10px 28px;
-    border: 0;
+    padding: 10px 15px 10px 15px;
+    /* border: 0; */
     border-radius: 4px;
 }
 
@@ -187,4 +185,10 @@ h2, h3, h4 {
 
 .bold {
     font-weight: bold;
+};
+
+.calc__period {
+    color: rgb(24 23 23);
+    text-align: center;
+    padding-top: 10px;
 }
