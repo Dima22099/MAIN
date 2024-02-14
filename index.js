@@ -9,8 +9,6 @@ const leftInput = document.querySelector('.left-input');
 const rightInput = document.querySelector('.right-input');
 const revers = document.querySelector('.revers');
 const calcDate = document.querySelector('.calc__period');
-const currencyRight = document.querySelector('.currency-right');
-const currencyLeft = document.querySelector('.currency-left');
 
 let leftPanelBlock;
 let rightPanelBlock;
@@ -134,10 +132,6 @@ const renderRightBox = () => {
 renderRightBox();
 renderLeftBox();
 
-// Получаем СТРЕЛКИ  // left & right arrow downs 
-const leftArrowDown = document.querySelector('.left__arrow__down');
-const rightArrowDown = document.querySelector('.right__arrow__down');
-
 // All-Currency
 const allCurrency = {
      RUB: 'Российский рубль', USD: 'Доллар США', EUR: 'Евро', GBP: 'Фунт стерлингов', AUD: 'Австралийский доллар', AZN: 'Азербаджанский манат',
@@ -175,18 +169,22 @@ function handleClickLeft(event) {
     // Если нажата стрелка вниз с лево
     if (event.target.classList.contains('left__arrow__down')) {
         isLeftModalOpen = !isLeftModalOpen;
-        
+
         //isLeftModalOpen === true ? тогда кнопка currency-checked, создаем modalWindow и отрисовываем renderBlockWindow 
-        if (isLeftModalOpen) { 
+        if (isLeftModalOpen) {
+            if (isRightModalOpen) {
+                isRightModalOpen = false;
+                rerenderRightPanel();
+            } else {
+                mainBlock.insertAdjacentHTML('afterend', '<div class="modalWindow"></div>')
+                renderBlockWindow();
+            }
+
             event.target.classList.add('currency-checked');
-            event.target.innerHTML = `arrow_upward <div class="modalWindow"></div>`;
-            renderBlockWindow();
-            // rerenderLeftPanel();
-            // если isLeftModalOpen === false то удаляем modalWindow
-        } else { 
-             leftArrowDown.innerText = 'arrow_downward';
+            event.target.innerHTML = 'arrow_upward';
+        } else {
             rerenderLeftPanel();
-            
+            closeBlockWindow();
         }
     } else {
         // Выбор из 4-х базовых валют в слючае если не нажата кнопка-стрелка вниз с лево
@@ -197,13 +195,14 @@ function handleClickLeft(event) {
         rerenderLeftPanel();
         getData();
     }
-};
+}
+
 leftPanelBlock.addEventListener('click', handleClickLeft)
 
 
 // Обработчик события на rightPanelBlock и right__arrow__down(modalWindow)
 function handleClickRight(event) {
-        // Если нажатый элемент currency-checked и не нажато на кнопку left__arrow__down то выходим!
+    // Если нажатый элемент currency-checked и не нажато на кнопку left__arrow__down то выходим!
     if (event.target.classList.contains('currency-checked') && !event.target.classList.contains('right__arrow__down')) return;
             
 // Если нажата стрелка вниз с право
@@ -211,15 +210,22 @@ function handleClickRight(event) {
         isRightModalOpen = !isRightModalOpen;
         
         //isRightModalOpen === true ? тогда кнопка currency-checked, создаем modalWindow и отрисовываем renderBlockWindow
-        if (isRightModalOpen) {           
+        if (isRightModalOpen) {
+            if (isLeftModalOpen) {
+                isLeftModalOpen = false;
+                rerenderLeftPanel();
+            } else {
+                mainBlock.insertAdjacentHTML('afterend', '<div class="modalWindow"></div>')
+                renderBlockWindow();
+            }
+
             event.target.classList.add('currency-checked');
-            event.target.innerHTML = `arrow_upward <div class="modalWindow"></div>`;
-            renderBlockWindow();
+            event.target.innerHTML = 'arrow_upward';
 
             //isRightModalOpen === false то удаляем modalWindow
-        } else { 
-            rightArrowDown.innerText = 'arrow_downward';
+        } else {
             rerenderRightPanel();
+            closeBlockWindow();
         }        
         
         // Выбор из 4-х базовых валют в слючае если не создано modalWindow
@@ -230,11 +236,10 @@ function handleClickRight(event) {
         rightInput.value = leftInput.value * CONVERSION_RATES[selectedCurrency];
         rerenderRightPanel();
         getData();
-        
     }
-};
-rightPanelBlock.addEventListener('click', handleClickRight);
+}
 
+rightPanelBlock.addEventListener('click', handleClickRight);
 
 
                         //  BUTTON <> REVERS
@@ -270,14 +275,13 @@ revers.addEventListener('click', () => {
 
             
     leftPanelCurrencies.forEach((item) => {
-        
         if (item.currency === oldRightCurrency) item.checked = true;
         const leftPanelIncludeCurrencie = leftPanelCurrencies.find((item) => item.currency === oldRightCurrency);
 
         if (!leftPanelIncludeCurrencie) {
             leftPanelCurrencies[leftPanelCurrencies.length - 1].currency = oldRightCurrency;
             leftPanelCurrencies[leftPanelCurrencies.length - 1].checked = true;
-        };                
+        }
     });
     
     // Повторно отрендерим обе панели
@@ -285,7 +289,6 @@ revers.addEventListener('click', () => {
     rerenderRightPanel();
     renderInputsInfo();
     getData();
-
 }); 
 
                 // Render INFO inputs
@@ -297,16 +300,13 @@ function  renderInputsInfo() {
     currencyInfoLeft.innerHTML = `1 ${getLeftSelectedCurrency()} = ${CONVERSION_RATES[getRightSelectedCurrency()]} ${" " + getRightSelectedCurrency()}`; //toFixed(3)
     currencyInfoRight.innerHTML = `1  ${getRightSelectedCurrency()} = ${divideTheLeftCurrencyByTheRightCurrency.toFixed(3)} ${" " + getLeftSelectedCurrency()}`;
 
-     // Дата и время 
-    let date = new Date();
-    let year = date.getFullYear();
-    let month = date.getMonth() + 1;
-    let day = date.getDate();
-    let hours = date.getHours();
-    let minute = date.getMinutes();
-    let formattedDate = (hours - 4) + ':' + minute + '  ' + day + '-' + month + '-' +  year;
-    calcDate.innerHTML += `${formattedDate}  GMT+03:00 <hr>`;
-};
+    // TODO: побаловаться с Intl.DateTimeFormat
+    const currentDate = new Intl.DateTimeFormat('ru-RU', {
+        dateStyle: 'short',
+    }).format(new Date());
+
+    calcDate.innerHTML = `Данные актуальны на ${currentDate}<hr>`;
+}
 
             // Обработчик события на leftInput 
 leftInput.addEventListener('input', () => {
@@ -318,71 +318,90 @@ leftInput.addEventListener('input', () => {
 
                                     // Функция создания modalWindow
 function renderBlockWindow() {
-    const rendermodalWindow = document.querySelector('.modalWindow');
+    const modalWindow = document.querySelector('.modalWindow');
 
     Object.keys(allCurrency).forEach((item, index) => {
         const value = allCurrency[item];
-
         const cssClass = index <= 10 ? 'leftOpenModal' : index <= 20 ? 'centrOpenModal' : 'rightOpenModal';
 
-        rendermodalWindow.innerHTML += ` <div class="${cssClass}" data-currency="${item}" >${value}
+        modalWindow.innerHTML += ` <div class="${cssClass}" data-currency="${item}" >${value}
                 <span class="leftOpenModal bold" data-currency="${item}">${item}</span>
                 </div>
          `;
     });
                         // Выбор валюты из модального окна !
-    rendermodalWindow.addEventListener('click', (event) => {
+    modalWindow.addEventListener('click', (event) => {
+        if (!event.target.dataset.currency) return;
+
         // TODO: Логика клика по новой валюте
 
         // в константу записываем валюту которая выбрана из модального окна
         const selectedCurrencyModalWindow = event.target.dataset.currency;
-    
-                // Пробую выбор из модального окна при отсутсвие базовых 4-х валют с ЛЕВО
-                    // Выбор из модального окна если открыто с левой стороны 
-        if (isLeftModalOpen && (selectedCurrencyModalWindow !== 'RUB' && selectedCurrencyModalWindow !== 'USD' 
-            && selectedCurrencyModalWindow !== 'EUR' && selectedCurrencyModalWindow !== 'GBP')) {
 
+
+        // Пробую выбор из модального окна при отсутсвие базовых 4-х валют с ЛЕВО
+        // Выбор из модального окна если открыто с левой стороны
+        const leftCurrencies = leftPanelCurrencies.map(({ currency }) => currency);
+
+
+        if (isLeftModalOpen && !leftCurrencies.includes(selectedCurrencyModalWindow)) {
             leftPanelCurrencies.forEach((item) => item.checked = false);
-            leftPanelCurrencies[leftPanelCurrencies.length - 1].currency = selectedCurrencyModalWindow;
-            leftPanelCurrencies[leftPanelCurrencies.length - 1].checked = true;
+            leftPanelCurrencies[leftPanelCurrencies.length - 1] =  { currency: selectedCurrencyModalWindow, checked: true };
+
+            rerenderLeftPanel();
+            getData();
         }
             // Выбор из модального окна если открыто с правой стороны
         if (isRightModalOpen) {
             rightPanelCurrencies.forEach((item) => item.checked = false);
-            rightPanelCurrencies[rightPanelCurrencies.length - 1].currency = selectedCurrencyModalWindow;
-            rightPanelCurrencies[rightPanelCurrencies.length - 1].checked = true;
+            rightPanelCurrencies[rightPanelCurrencies.length - 1] = { currency: selectedCurrencyModalWindow, checked: true };
+
+            rerenderRightPanel();
         }
-        getData();
+
+        closeBlockWindow();
         renderInputsInfo();
     });
-};
+}
+
+function closeBlockWindow() {
+    const modalWindow = document.querySelector('.modalWindow');
+
+    isLeftModalOpen = false;
+    isRightModalOpen = false;
+
+    modalWindow.remove();
+    rerenderLeftPanel();
+    rerenderRightPanel();
+}
 
 
-// // Обработчик события на modalWindow, если нажать на другую область, то он должен скрыться
-function closeModalWindow(event) {
-    
-    if (event.target.classList.contains('.modalWindow')) {
-        // Проверяем, был ли клик вне области modalWindow
-        // closeModal(); // Вызываем функцию закрытия модального окна
-        // leftArrowDown.innerText = 'arrow_downward'; 
-        // isLeftModalOpen = false;
-        // if (event.target.closest('.currency-left') || event.target.closest('.currency-right'))
-        
-        // alert(123)
+document.addEventListener('click', (event) => {
+    if (isLeftModalOpen || isRightModalOpen) {
+        if (event.target.classList.contains('left__arrow__down') || event.target.classList.contains('right__arrow__down')) return;
+
         if (!event.target.closest('.modalWindow')) {
-            const modalWindow = document.querySelector('.modalWindow');
-            // modalWindow.remove();
-            modalWindow.style.display = 'none';
-            console.log(modalWindow, 'modalWindow')
-            // leftPanelCurrencies[leftPanelCurrencies.length].checked = false;
-            // console.log(leftPanelCurrencies.nextElementSibling, '2131')
-            alert('a vot i ya!!!!');
-        }
-        
-    }
-};
+            isLeftModalOpen = false;
+            isRightModalOpen = false;
 
-document.addEventListener('click', closeModalWindow);
+            closeBlockWindow();
+        }
+    }
+})
+
+// // // Обработчик события на modalWindow, если нажать на другую область, то он должен скрыться
+// function closeModalWindow(event) {
+//     if (event.target.classList.contains('.modalWindow')) {
+//         if (!event.target.closest('.modalWindow')) {
+//             const modalWindow = document.querySelector('.modalWindow');
+//             modalWindow.style.display = 'none';
+//             console.log(modalWindow, 'modalWindow')
+//             alert('a vot i ya!!!!');
+//         }
+//     }
+// }
+//
+// document.addEventListener('click', closeModalWindow);
 
 
    
@@ -396,7 +415,7 @@ document.addEventListener('click', closeModalWindow);
 // TODO: красивое форматирование чисел в инпутах (Intl.NumberFormat) + только 2 числа после точки
 // TODO: красивая вёрстка!!!
 
-//  TODO: обработчик события на стрелку reverse (по середине)
+// TODO: обработчик события на стрелку reverse (по середине)
 // TODO: модальное окно и логика выбора новый валюты (встаёт в конец панели + эта валюта становится выбрана)
 
 // Обработчик события на выбор валют с право!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

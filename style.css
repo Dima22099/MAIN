@@ -38,7 +38,7 @@ h2, h3, h4 {
     text-align: center;
     border-radius: 3px;
     display: flex;
-    
+
     background-color: #eedfdf;
 }
 
@@ -52,7 +52,7 @@ h2, h3, h4 {
     cursor: pointer;
 }
 
-.colorGreen { 
+.colorGreen {
     background-color:  green !important; /* Цвет при клике */
 }
 
@@ -108,9 +108,9 @@ h2, h3, h4 {
     font-variation-settings:
     'FILL' 0,
     'wght' 400,
-    'GRAD' 0, 
+    'GRAD' 0,
     'opsz' 24
-    
+
 }
 
 .icon__sync {
@@ -125,14 +125,14 @@ h2, h3, h4 {
     font-variation-settings:
     'FILL' 0,
     'wght' 400,
-    'GRAD' 0, 
+    'GRAD' 0,
     'opsz' 24
-    
+
 }
 
 .icon__sync:hover {
     transform: scale(3);
-    
+
 }
 
 .modalWindow {
@@ -146,22 +146,22 @@ h2, h3, h4 {
     border-radius: 5px;
     height: 300px;
     width: 830px;
-    
+
     left: 50px;
-    top: 125px;
+    top: 525px;
     font-size: 18px;
     color: black;
     box-shadow: 0 8px 40px 0 #c0c0c00f;
     line-height: 1;
     -webkit-transition: all 0.5s ease;
     transition: all 0.3s ease;
-    
+
     background: #fff;
 }
 
 .revers {
     cursor: pointer;
-    
+
 }
 
 
