@@ -5,12 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./style.css">
-    <title>Exchange</title>
+    <title>Конвертор валют</title>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 </head>
 
 <body>
-    <h2>Калькулятор обмена валюты</h2>
+    <label class="switch">
+        <input type="checkbox" class="switch__input">
+        <span class="switch__slider"></span>
+    </label>
+    <h2 class="title_h2">Калькулятор обмена валюты</h2>
     <div class="main">
         <div class="calc-input-box-left">
             <input class="left-input" type="text" value="100">
@@ -29,6 +33,6 @@
         </div>
     </div>
     <div class="test"></div>
-    <script src="./index.js"></script>
+    <script src="./Exchange.js"></script>
 </body>
 </html>

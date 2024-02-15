@@ -1,15 +1,98 @@
 
 body {
-    background-color: rgb(198, 210, 206);
+    background-color: white;
+    transition: background-color 0.3s ease;
+    color: #121212;
 }
+
+
+body.dark-theme {
+    /* Цвет фона для темной темы */
+    background-color: #121212;
+    /* Основной цвет текста для темной темы */
+    color: #ffffff;
+}
+
+.switch__divs {
+    margin-top: 20px;
+}
+/* Ситли контейнера */
+.switch {
+    display: inline-block;
+    position: relative;
+    width: 60px;
+    height: 34px;
+    margin-left: 1700px;
+    /* background-color: #363131; */
+}
+
+/* скрыть стандартное оформление checkbox*/
+.switch__input {
+    width: 0;
+    height: 0;
+    opacity: 0;
+}
+
+/*Слайдер*/
+.switch__slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    border-radius: 34px;
+    transition: 0.4s;
+
+    background-color: black;
+}
+
+.switch__slider::before {
+    content: '';
+    position: absolute;
+    cursor: pointer;
+    left: 4px;
+    bottom: 4px;
+    height: 26px;
+    width: 26px;
+    border-radius: 50px;
+    transition: 0.4s;
+
+    background-color: #6683d3;
+}
+/*Стили при фокусе на элемент*/
+.switch__input:focus + .switch__slider {
+    box-shadow: 0 0 1px #2196f3;
+}
+.switch__input:checked + .switch__slider {
+    background-color: #f5f5f5;
+}
+
+.switch__input:checked + .switch__slider::before {
+    transform: translateX(26px);
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+}
+
 h2, h3, h4 {
     text-align: center;
     margin: 10px;
+    
 }
 
+.title_h2 {
+    padding-top: 100px;
+    font-size: 35px;
+    padding-right: 50px;
+}
+.title_h4 {
+    text-align: left;
+    font-size: 20px;
+    color: rgb(70, 61, 61);
+}
 
 .currency-checked {
-    color: #fff;
+    color: white;
     background-color: #16b67f;
 }
 
@@ -39,16 +122,15 @@ h2, h3, h4 {
     border-radius: 3px;
     display: flex;
 
-    background-color: #eedfdf;
+    /* background-color: rgb(198, 210, 206);     */
 }
 
 .currency__item {
     width: 85px;
     height: 30px;
-    /* border: 2px blue solid; */
-    padding: 10px 10px 0 10px;
+    padding-top: 10px;
     border: 1px grey solid;
-    border-radius: 4px;
+    border-radius: 15px;
     cursor: pointer;
 }
 
@@ -88,8 +170,8 @@ h2, h3, h4 {
     font-size: 30px;
     text-align: left;
     padding: 10px 15px 10px 15px;
-    /* border: 0; */
-    border-radius: 4px;
+    /* border: 0;
+    border-radius: 4px; */
 }
 
 .js-converter-rate-from-right, .js-converter-rate-from-left {
@@ -97,7 +179,7 @@ h2, h3, h4 {
     height: 15px;
     font-weight: bold;
     font-size: 15px;
-    padding: 0 0 5px 15px;
+    padding: 10px 0 5px 15px;
     color: #454242;
     border-radius: 4px;
 
@@ -147,8 +229,8 @@ h2, h3, h4 {
     height: 300px;
     width: 830px;
 
-    left: 50px;
-    top: 525px;
+    left: 500px;
+    top: 420px;
     font-size: 18px;
     color: black;
     box-shadow: 0 8px 40px 0 #c0c0c00f;
@@ -156,7 +238,7 @@ h2, h3, h4 {
     -webkit-transition: all 0.5s ease;
     transition: all 0.3s ease;
 
-    background: #fff;
+    background: #fffbfb;
 }
 
 .revers {
@@ -167,10 +249,10 @@ h2, h3, h4 {
 
 .leftOpenModal, .centrOpenModal,
 .rightOpenModal {
-    padding: 2px;
+    padding: 4px;
     font-family: fangsong, sans-serif;
-    max-width:  240px;
-    flex: auto;
+    max-width: 271px;
+    flex: none;
     cursor: pointer;
 }
 
