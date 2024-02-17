@@ -10,14 +10,15 @@ const rightInput = document.querySelector('.right-input');
 const revers = document.querySelector('.revers');
 const calcDate = document.querySelector('.calc__period');
 const switchBtn = document.querySelector('.switch__slider');
+const iconCurrencyLeft = document.querySelector('.icon-currency-left');
+const iconCurrencyRight = document.querySelector('.icon-currency-right');
 
 let leftPanelBlock;
 let rightPanelBlock;
 
 // switch
 switchBtn.addEventListener('click', () => document.body.classList.toggle('dark-theme'));
-
-    
+     
 // #2 Состояние
 const leftPanelCurrencies = [
     {
@@ -67,6 +68,8 @@ let isRightModalOpen = false;
 const getLeftSelectedCurrency = () => leftPanelCurrencies.filter(({ checked }) => checked)[0].currency; 
 
 const getRightSelectedCurrency = () => rightPanelCurrencies.filter(({ checked }) => checked)[0].currency;
+
+
 // Отрисовка 4-х валют с сево 
 const rerenderLeftPanel = () => {
     const left = document.querySelector('.currency-left');
@@ -159,7 +162,7 @@ const getData = async () => {
         const response = await fetch(URL);
         const { conversion_rates } = await response.json();
         CONVERSION_RATES = conversion_rates;
-        rightInput.value = (leftInput.value * CONVERSION_RATES[rightSelectedCurrency]).toFixed(1);
+        rightInput.value = (leftInput.value * CONVERSION_RATES[rightSelectedCurrency]).toFixed(2);
     } catch(e) {
         console.log(e, "Error");
     }
@@ -251,13 +254,26 @@ function handleClickRight(event) {
         const selectedCurrency = event.target.dataset.currency;
         rightPanelCurrencies.forEach(({ currency }, index) => rightPanelCurrencies[index].checked = currency === selectedCurrency);
         // Отображение информации о конвертации НА ПРАВОМ rightInput 
-        rightInput.value = (leftInput.value * CONVERSION_RATES[selectedCurrency]).toFixed(4);
+        rightInput.value = (leftInput.value * CONVERSION_RATES[selectedCurrency]).toFixed(2);
         rerenderRightPanel();
         getData();
     }
 };
 rightPanelBlock.addEventListener('click', handleClickRight);
 
+
+// new Intl.NumberFormat currency 
+setInterval(() => {
+    let leftNumber = leftInput.value;
+    const formatterLeft = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: getLeftSelectedCurrency()});
+    const formattedNumberLeft = formatterLeft.format(leftNumber);
+    iconCurrencyLeft.textContent = formattedNumberLeft;
+
+    let rightNumber = rightInput.value;
+    const formatterRight = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: getRightSelectedCurrency()});
+    const formattedNumberRight = formatterRight.format(rightNumber);
+    iconCurrencyRight.textContent = formattedNumberRight;
+ }, 1000);
 
                         //  BUTTON <> REVERS
 revers.addEventListener('click', () => {
@@ -315,12 +331,19 @@ function  renderInputsInfo() {
     const currencyInfoRight = document.querySelector('.js-converter-rate-from-right');
     let divideTheLeftCurrencyByTheRightCurrency = CONVERSION_RATES[getLeftSelectedCurrency()] / CONVERSION_RATES[getRightSelectedCurrency()];
 
-    currencyInfoLeft.innerHTML = `1 ${getLeftSelectedCurrency()} = ${CONVERSION_RATES[getRightSelectedCurrency()].toFixed(4)} ${" " + getRightSelectedCurrency()}`; 
-    currencyInfoRight.innerHTML = `1  ${getRightSelectedCurrency()} = ${divideTheLeftCurrencyByTheRightCurrency.toFixed(4)} ${" " + getLeftSelectedCurrency()}`;
+    currencyInfoLeft.innerHTML = `1 ${getLeftSelectedCurrency()} = ${CONVERSION_RATES[getRightSelectedCurrency()].toFixed(2)} ${" " + getRightSelectedCurrency()}`; 
+    currencyInfoRight.innerHTML = `1  ${getRightSelectedCurrency()} = ${divideTheLeftCurrencyByTheRightCurrency.toFixed(2)} ${" " + getLeftSelectedCurrency()}`;
 
     // Date now and looking
     const currentDate = new Intl.DateTimeFormat('ru-RU', {
-        dateStyle: 'short',
+        timeZone: 'Europe/Moscow',
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        // dateStyle: 'short',
     }).format(new Date());
 
     calcDate.innerHTML = `Данные актуальны на ${currentDate}<hr>`;
@@ -330,7 +353,7 @@ function  renderInputsInfo() {
 leftInput.addEventListener('input', () => {
     const rightCurrency = getRightSelectedCurrency();
     const newValue = leftInput.value;
-    rightInput.value = (newValue * CONVERSION_RATES[rightCurrency]).toFixed(3);
+    rightInput.value = (newValue * CONVERSION_RATES[rightCurrency]).toFixed(2);
 });
 
 
@@ -416,6 +439,25 @@ function closeBlockWindow() {
     rerenderRightPanel();
 };
 
+// Запрет ввода букв и символов 
+leftInput.setAttribute('onkeypress', 'return onlyNumbers(event)');
+rightInput.setAttribute('onkeypress', 'return onlyNumbers(event)');
+
+function onlyNumbers(event) {
+    const key = event.keyCode || event.which;
+    const allowedKeys = [8, 9, 13, 27, 46]; // разрешенные клавиши: backspace, tab, enter, esc, delete
+    if (allowedKeys.includes(key)) {
+      return true;
+    }
+    if (key < 48 || key > 57) { // разрешены только цифры
+      event.preventDefault();
+      return false;
+    }
+    if (leftInput.value.length >= 15 || rightInput.value.length >= 15) { // максимальное количество символов
+        event.preventDefault();
+        return false;
+      }
+  };
 
 // Обработчик события на документ, скрывает modalWindow если клик был на другую область!
 document.addEventListener('click', (event) => {
@@ -434,9 +476,17 @@ document.addEventListener('click', (event) => {
 // TODO LIST
 
 // TODO: побаловаться с Intl.DateTimeFormat
-// TODO: обработать запрет на ввод букв в каждый инпут
-// TODO: красивое форматирование чисел в инпутах (Intl.NumberFormat) + только 2 числа после точки
+
+
 // TODO: красивая вёрстка!!!
 
+// TODO: красивое форматирование чисел в инпутах (Intl.NumberFormat) + только 2 числа после точки
+// TODO: обработать запрет на ввод букв в каждый инпут
 // TODO: обработчик события на стрелку reverse (по середине)
 // TODO: модальное окно и логика выбора новый валюты (встаёт в конец панели + эта валюта становится выбрана)
+
+
+
+     
+      
+      
