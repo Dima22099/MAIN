@@ -15,27 +15,27 @@ body {
 }
 
 body.dark-theme {
-  /* Цвет фона для темной темы */
   background-color: #121212;
-  /* Основной цвет текста для темной темы */
   color: #ffffff;
 }
 
-.theme {
-  display: flex;
-  padding-top: 40px;
+.theme-top {
+      margin-top: -37px;
 }
+
 .switch__divs {
-  margin-top: 20px;
+  margin-top: 40px;
 }
-/* Ситли контейнера */
+
 .switch {
-  display: inline-block;
-  position: absolute;
-  top: 0;
-  right: 70px;
-  width: 60px;
-  height: 34px;
+    display: flex;
+    position: absolute;
+    top: 0px;
+    right: 70px;
+    width: 60px;
+    height: 34px;
+    align-items: baseline;
+    flex-direction: column;
 }
 
 /* скрыть стандартное оформление checkbox*/
@@ -136,7 +136,13 @@ h4 {
   border: 1px solid #000;
   align-items: center;
   position: relative;
+  border-radius: 12px;
+  max-width: 510px;
 }
+
+.dark-theme .div-right-input {
+    border: 1px solid white;
+  }
 
 .calc__period.js-converter-period {
   position: absolute;
@@ -147,12 +153,22 @@ h4 {
   padding-top: 10px;
 }
 
+.dark-theme .calc__period.js-converter-period {
+color: white;
+}
 .div-left-input {
   display: flex;
   border: 1px solid #000;
   align-items: center;
   position: relative;
+  border-radius: 12px;
+  max-width: 510px;
 }
+
+.dark-theme .div-left-input {
+    border: 1px solid white;
+  }
+
 
 .left-input {
   border: none;
@@ -189,25 +205,6 @@ h4 {
   cursor: pointer;
 }
 
-.colorGreen {
-  background-color: green !important; /* Цвет при клике */
-}
-
-.calc-input-box-left,
-.calc-input-box-right {
-  border-radius: 4px;
-}
-
-.container {
-  width: 780px;
-  padding: 100px 30px;
-  position: absolute;
-  top: 125px;
-  background: #fff;
-  box-shadow: 0 8px 40px 0 #c0c0c00f;
-  border-radius: 4px;
-}
-
 .right-input,
 .left-input {
   width: 50%;
@@ -217,20 +214,21 @@ h4 {
   padding: 10px 15px 10px 15px;
   outline: none;
   border: none;
+  border-radius: 15px;
 }
 
 .js-converter-rate-from-right,
 .js-converter-rate-from-left {
-  width: 303px;
+  max-width: 263px;
   height: 15px;
   font-weight: bold;
   font-size: 15px;
   padding: 4px 0 5px 15px;
   color: #454242;
-  border-radius: 4px;
+  border-radius: 10px;
   background-color: #fff;
   position: absolute;
-  bottom: 1px;
+  bottom: 10px;
   left: 1px;
 }
 
@@ -258,24 +256,23 @@ h4 {
 }
 
 .modalWindow {
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  padding: 10px;
-  border-radius: 5px;
-  height: 300px;
-  justify-content: center;
-  margin-top: 50px;
-  margin-left: 10%;
-  font-size: 18px;
-  color: black;
-  box-shadow: 0 8px 40px 0 #c0c0c00f;
-  line-height: 1;
-  -webkit-transition: all 0.5s ease;
-  transition: all 0.3s ease;
-  background: #fffbfb;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    padding: 50px;
+    border-radius: 5px;
+    height: 330px;
+    justify-content: center;
+    margin-left: 16%;
+    font-size: 18px;
+    color: black;
+    box-shadow: 0 8px 40px 0 #c0c0c00f;
+    line-height: 1;
+    -webkit-transition: all 0.5s ease;
+    transition: all 0.3s ease;
+    background: #fffbfb;
 }
 
 .revers {
@@ -285,7 +282,7 @@ h4 {
 .leftOpenModal,
 .centrOpenModal,
 .rightOpenModal {
-  padding: 4px;
+  padding: 3px;
   font-family: fangsong, sans-serif;
   max-width: 271px;
   flex: none;
@@ -322,5 +319,15 @@ h4 {
   width: 50%;
   text-align: right;
   padding: 10px 15px;
+  /* border-radius: 10px; */
   border-left: 1px solid #000;
+}
+
+.dark-theme  .icon-currency-left,
+.icon-currency-right {
+    background-color: white;
+    color: black;
+}
+.dark-theme  .title_h4 {
+    color: white;
 }
