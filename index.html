@@ -1,43 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style.css" />
     <title>Конвертор валют</title>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-</head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+  </head>
 
-<body>
-    <label class="switch"><span class="theme">Переключиться на темную / Светлую тему</span>
-        <input type="checkbox" class="switch__input">
+  <body>
+    <div class="wrapper">
+      <label class="switch"
+        ><span class="theme">Переключиться на темную / Светлую тему</span>
+        <input type="checkbox" class="switch__input" />
         <span class="switch__slider"></span>
-    </label>
-    <h2 class="title_h2">Калькулятор обмена валюты</h2>
-    <div class="main">
-        <div class="calc-input-box-left">
-            <div class="div-left-input">
-                <input class="left-input" type="text" value="100">
-                <span class="icon-currency-left"></span>
-            </div>
+      </label>
+      <h2 class="title_h2">Калькулятор обмена валюты</h2>
+      <div class="main">
+        <div class="left-panel">
+          <div class="div-left-input">
+            <input class="left-input" type="text" value="100" />
+            <p class="icon-currency-left"></p>
             <div class="js-converter-rate-from-left"></div>
+          </div>
         </div>
-
-    <div class="revers_sync_alt">
-            <span class="material-symbols-outlined icon__sync revers">sync_alt</span>
+        <div class="revers_sync_alt">
+          <span class="material-symbols-outlined icon__sync revers"
+            >sync_alt</span
+          >
         </div>
-
-        <div class="calc-input-box-right">
+        <div class="right-panel">
+          <div class="calc-input-box-right">
             <div class="div-right-input">
-                <input class="right-input" type="text">
-                <span class="icon-currency-right"></span>
+              <input class="right-input" type="text" />
+              <p class="icon-currency-right"></p>
             </div>
             <div class="js-converter-rate-from-right"></div>
-            <div class="calc__period js-converter-period" style="color: rgb(83, 82, 82); text-align: center; padding-top: 10px;"></div>
+          </div>
+          <div class="calc__period js-converter-period"></div>
         </div>
+      </div>
+      <div class="test"></div>
     </div>
-    <div class="test"></div>
+
     <script src="./Exchange.js"></script>
-</body>
+  </body>
 </html>
