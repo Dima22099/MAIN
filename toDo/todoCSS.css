@@ -1,0 +1,14 @@
+
+.main {
+    max-width: 1024; 
+    max-height: 980; 
+    margin-top: 300px; 
+    margin-left: 430px; 
+    border: 1px solid black;
+}
+
+#create {
+    display: flex; 
+    justify-content: space-around; 
+    align-items: baseline;
+}
