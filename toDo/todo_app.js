@@ -49,10 +49,10 @@ const getToDo = async (url) => {
     Object.values(data).forEach(el => {
         totalTodosCout += el.todosCount;
 
-        table.innerHTML += `<div id="addToDo">     
+        table.innerHTML += `<div class="user">     
             <p> ${el.username} </p> 
             
-            <h4>Решенных задач: <span class="h4"> ${el.todosCount}</span></h4>
+            <h3>Решенных задач: <span class="h3">0</span></h3>
             
             <form class="forms">
                 ${el.todos.map(element =>
@@ -79,6 +79,12 @@ startApplication();
 
 
 table.addEventListener('click', (event) => {
+    document.querySelectorAll('.user').forEach((e) => {
+        const count = e.querySelector('.h3');
+        const checkedCount = e.querySelectorAll('input[type="checkbox"]:checked').length;
+        count.innerText = checkedCount;
+    });
+
     if (event.target.tagName !== 'INPUT') return;
 const prevValue = Number(event.target.getAttribute('value'));
 const newValue = prevValue === 0 ? 1 : 0;

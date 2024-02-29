@@ -1,34 +1,41 @@
 
 #main {
-    /* max-width: 1024; 
-    max-height: 980;  */
     width: 900px;
     margin-top: 200px; 
     margin-left: 300px; 
     border: 1px solid black;
 }
 
-#addToDo {
+.title {
+    text-align: center;
+}
+.user {
     display: flex;
     align-items: center;
     border: 1px solid grey;
     flex-direction: row;
     justify-content: space-between;
 }
-#addToDo > p {
+.user > p {
     margin-left: 20px;
     font-size: xx-large;
     border-bottom: 2px solid black;
 }
 
-span {
-    border: 1px solid black;
-    height: 150px;
-    width: 444px;
-}
-
 .forms > p {
     margin: 5px;
     max-width: 400px;
+    font-size: 19px;
     border: 1px solid rgb(159, 156, 156);
+}
+
+ .forms > p:hover {
+    cursor: pointer;
+    font-weight: 500;
+    background-color: rgb(167 167 217);
+}
+
+p > input:hover {
+    transform: scale(1.5);
+    cursor: pointer;
 }
